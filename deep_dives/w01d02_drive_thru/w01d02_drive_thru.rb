@@ -4,45 +4,37 @@ def message_generator(type)
   pull_forward_messages = ["Bob: I'm so sorry. Just please pull up and we'll figure out your order.", "Gene: Come and GET EM!", "Louise: If you want em, you're going to have to pull forward and take your burgers from MY COLD DEAD HANDS!"]
   speak_up_messages = ["Louise: GENE BE QUIET! ... I'm sorry but you're going to have to speak up.", "Gene: SPEAK UP!", "Bob: I'm so sorry. My kids have had entirely too much sugar today, and are very loud. You're going to have to yell for me to hear you."]
 
-
-  if type == :welcome
+  if type == "welcome"
     puts welcome_messages[rand(welcome_messages.length)]
-  elsif type == :speak_up
-    puts puts speak_up_messages[rand(speak_up_messages.length)]
-  elsif type == :misheard
+  elsif type == "misheard"
     puts misheard_messages[rand(misheard_messages.length)]
-  elsif type == :pull_forward
+  elsif type == "pull_forward"
     puts pull_forward_messages[rand(pull_forward_messages.length)]
+  elsif type == "speak_up"
+    puts speak_up_messages[rand(speak_up_messages.length)] 
   end
 end
 
 def drive_thru
+  message_generator("welcome")
   order_finished = false
-  thats_it_count = 0
-
-  message_generator(:welcome)
+  thats_it = 0
 
   until order_finished
     order = gets.chomp
-
-    if order == "THATS IT" or order == "THAT'S IT"
-      thats_it_count += 1
-      if thats_it_count == 3 
+    if order == "THAT'S IT" || order == "THATS IT"
+      thats_it += 1
+      if thats_it == 3
         order_finished = true
-        message_generator(:pull_forward)
-      else 
-        puts "What else can I get you?"
+        message_generator("pull_forward")
+      else
+        puts "WHAT?!"
       end
-    elsif order == "I CAN'T TAKE THIS ANYMORE"
-      order_finished = true
-      puts ""
-      puts "*Tires screech*"
-      puts ""
-      puts "Louise: Hey just WHERE DO YOU THINK YOU'RE GOING?!"
-    elsif order == order.upcase
-      message_generator(:misheard)
+    elsif order == order.upcase 
+      message_generator("misheard")
+      puts "Anything else?"
     else
-      message_generator(:speak_up)
+      message_generator("speak_up")
     end
   end
 end
