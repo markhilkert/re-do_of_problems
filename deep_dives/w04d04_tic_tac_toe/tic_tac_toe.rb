@@ -5,7 +5,7 @@ def clear_screen!
   system 'clear'
 end
 
-class Tic_tac_toe
+class TicTacToe
   attr_accessor :board, :turns
 
   def initialize
@@ -19,7 +19,7 @@ class Tic_tac_toe
   end
 
   def display_board
-    puts "╔=======╗".white
+    puts "╔═══════╗".white
     @board.each do |row|
       formatted_row = "║ ".white
       row.each do |square|
@@ -32,7 +32,17 @@ class Tic_tac_toe
 
       puts formatted_row + "║".white
     end
-    puts "╚=======╝".white
+    puts "╚═══════╝".white
+  end
+
+  def place_value(square)
+    if @turn.even?
+      square.place_o
+      @turn += 1
+    else
+      square.place_x
+      @turn += 1
+    end
   end
 
   def update
@@ -52,13 +62,7 @@ class Tic_tac_toe
     end
 
     if selected_square.display == nil
-      if @turn.even? == false
-        selected_square.place_x
-        @turn += 1
-      else
-        selected_square.place_o
-        @turn += 1
-      end
+      place_value(selected_square)
     else
       clear_screen!
       p "DANGER WILL ROBINSON"
@@ -66,6 +70,15 @@ class Tic_tac_toe
       puts "Invalid square. Please select another."
       gets
       display_board
+    end
+  end
+
+## Try to implement this later to clean up the winner? method.
+  def row_winner?(board)
+    board.each do |row|
+      if row[0].display && row[0].display == row[1].display && row[1].display == row[2].display
+        @winner = true
+      end
     end
   end
 
@@ -117,5 +130,5 @@ class Tic_tac_toe
   end   
 end
 
-game = Tic_tac_toe.new
-game.run_program
+game = TicTacToe.new
+# game.run_program

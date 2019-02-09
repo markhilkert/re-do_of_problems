@@ -15,7 +15,7 @@ class Superhero
     if @hitpoints < 1
       @alive = false
     end
-  end
+  end 
 
   def hit(hero)
     hero.got_hit(@attack)
