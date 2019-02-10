@@ -49,6 +49,7 @@ class BlackJack
     @table.each do |player|
       2.times do
         @dealer.deal_card(player)
+        show_table
       end
     end
   end
