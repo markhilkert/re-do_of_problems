@@ -191,7 +191,7 @@ class BlackJack
       end
       gets
     end
-    puts "YOU LOSE PUNY HUMAN"
+    puts "YOU LOSE."
   end
 
 end
