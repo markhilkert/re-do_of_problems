@@ -27,8 +27,6 @@ class BlackJack
     end
 
     @player.doopals -= @player.bet
-    @cpu_1.place_bet
-    @cpu_2.place_bet
   end
 
   def computers_bet
@@ -45,11 +43,11 @@ class BlackJack
     end
   end
 
-  def turn
+  def player_plays
     until @player.bust || @player.stay
       show_table
       puts
-      puts "Your current total is #{@player.card_total}"
+      puts "You have #{@player.card_total} doopals."
       puts "Hit or Stay?"
       answer = gets.chomp.downcase
       if answer[0] == 'h'
@@ -58,6 +56,8 @@ class BlackJack
         @player.stay = true
       end
     end
+    puts "Press any key to see the rest of the table play"
+    gets
   end
 
   def computers_play
@@ -66,7 +66,12 @@ class BlackJack
       unless player.class == Player
         until player.stay == true
           @dealer.deal_card(player)
+          show_table
+          puts "#{player.name} Hits!"
+          sleep(2)
         end
+        puts "#{player.name} stays."
+        sleep(1)
       end
     end
     @hand_over = true
@@ -95,11 +100,6 @@ class BlackJack
       if winner?(player) && player.class != Dealer
         puts "#{player.name} WINS!"
         player.won = true
-        p "=" * 50
-        p "=" * 50
-        p player.won
-        p "=" * 50
-        p "=" * 50
       elsif !winner?(player)
         puts "#{player.name} lost this hand." 
       end
@@ -125,6 +125,8 @@ class BlackJack
   end
 
   def all_cards_face_up
+    puts "Press any key to show everyone's cards"
+    gets
     @table.each { |player| player.cards[0].show = true }
   end
 
@@ -140,7 +142,6 @@ class BlackJack
     end
   end
 
-### NEED TO FIX THIS LATER, COMPUTERS MONEY ARENT CALCULATING CORRECTLY
   def pay_out
     @players.each do |player|
       player.doopals += 2 * player.bet if player.won
@@ -167,7 +168,7 @@ class BlackJack
       player_bets
       computers_bet
       initial_deal
-      turn
+      player_plays
       show_table
       computers_play
       all_cards_face_up

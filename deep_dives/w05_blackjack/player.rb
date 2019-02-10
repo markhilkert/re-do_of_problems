@@ -46,14 +46,4 @@ class Player
   def toggle_bust
     @bust = !@bust
   end
-
-  def place_bet(bet_amount)
-    if bet_amount <= @doopals
-      @bet = bet_amount
-      @doopals -= bet_amount
-      return @bet
-    else
-      return false
-    end
-  end
 end
