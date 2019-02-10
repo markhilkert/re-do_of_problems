@@ -3,7 +3,7 @@ class Player
   attr_reader :card_total
 
   def initialize
-    @doopals = 80
+    @doopals = 500
     @bust = false
     @card_total = 0
     @cards = []

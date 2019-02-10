@@ -3,7 +3,7 @@ require_relative 'dialogue'
 
 class BlackJack
   include Dialogue
-  attr_accessor :player, :cpu_1, :cpu_2, :dealer, :table, :game_over
+  attr_accessor :player, :cpu_1, :cpu_2, :dealer, :table, :players, :game_over
 
   def initialize
     @player = Player.new
@@ -12,29 +12,29 @@ class BlackJack
     @dealer = Dealer.new
     @table = [@player, @cpu_1, @cpu_2, @dealer]
     @players = [@player, @cpu_1, @cpu_2]
-    @round_counter = 0
     @game_over = false
     @hand_over = false
   end
 
-  def place_bets
-    @round_counter += 1
+  def player_bets
     successful_bet = false
 
     until successful_bet
-      @player.bet = player_bets
+      @player.bet = bet_dialogue
       highest_bet = @player.doopals < 100 ? @player.doopals : 100
       
-      if @player.bet.between?(1,highest_bet)
-        successful_bet = true
-      else
-        invalid_bet
-      end
+      @player.bet.between?(1,highest_bet) ? successful_bet = true : invalid_bet
     end
 
     @player.doopals -= @player.bet
     @cpu_1.place_bet
     @cpu_2.place_bet
+  end
+
+  def computers_bet
+    @table.each do |player|
+      player.place_bet if player.class == ComputerPlayer
+    end
   end
 
   def initial_deal
@@ -72,7 +72,59 @@ class BlackJack
     @hand_over = true
   end
 
-  def show_all_cards
+  def printify_cards(player)
+    cards = Array.new(9, "")
+
+    player.cards.each do |card|
+      if player.class != Player && card.show == false
+        9.times do |index|
+          cards[index] += card.back[index]
+        end
+      else
+        9.times do |index|
+          cards[index] += card.front[index]
+        end
+      end
+    end
+    cards
+  end
+
+  def finish_hand(player)
+    puts "#{player.name} has #{player.card_total} points."
+    unless player.class == Dealer
+      if winner?(player) && player.class != Dealer
+        puts "#{player.name} WINS!"
+        player.won = true
+        p "=" * 50
+        p "=" * 50
+        p player.won
+        p "=" * 50
+        p "=" * 50
+      elsif !winner?(player)
+        puts "#{player.name} lost this hand." 
+      end
+    end
+  end
+
+  def show_table
+    system 'clear'
+    @table.each do |player|
+      puts "#{player.name}:"
+      puts "Bet: #{player.bet}" unless player.class == Dealer
+
+      cards = printify_cards(player)
+
+      puts cards
+      puts "BUSTED." if player.bust
+
+      if @hand_over
+        finish_hand(player)
+      end
+      puts "=" * cards[0].length
+    end
+  end
+
+  def all_cards_face_up
     @table.each { |player| player.cards[0].show = true }
   end
 
@@ -88,6 +140,7 @@ class BlackJack
     end
   end
 
+### NEED TO FIX THIS LATER, COMPUTERS MONEY ARENT CALCULATING CORRECTLY
   def pay_out
     @players.each do |player|
       player.doopals += 2 * player.bet if player.won
@@ -108,15 +161,16 @@ class BlackJack
 
   def run_program
     system 'clear'
-    @player.name = welcome
+    @player.name = welcome_dialogue
     until game_over
       system 'clear'
-      place_bets
+      player_bets
+      computers_bet
       initial_deal
       turn
       show_table
-      # system 'clear'
       computers_play
+      all_cards_face_up
       show_table
       pay_out
       reset_variables
@@ -127,24 +181,8 @@ class BlackJack
     end
   end
 
-  # def round
-  #   @table.each do |player|
-  #     place_bets(player)
-  #   end
-  #   @table.each do |player|
-  #     initial_deal(player)
-  #   end
-  #   @table.each do |player|
-  #     turn(player)
-  #   end
-  # end
 end
 
 game = BlackJack.new
 game.run_program
 
-# game.table.each do |player|
-#   if player.class != Dealer
-#     p player 
-#   end
-# end
