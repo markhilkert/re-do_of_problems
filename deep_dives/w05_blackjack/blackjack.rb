@@ -3,17 +3,27 @@ require_relative 'dialogue'
 
 class BlackJack
   include Dialogue
-  attr_accessor :player, :cpu_1, :cpu_2, :dealer, :table, :players, :game_over
+  attr_accessor :player, :dealer, :table, :players, :game_over
 
   def initialize
     @player = Player.new
-    @cpu_1 = ComputerPlayer.new
-    @cpu_2 = ComputerPlayer.new
+    cpu_1 = ComputerPlayer.new
+    cpu_2 = ComputerPlayer.new
     @dealer = Dealer.new
-    @table = [@player, @cpu_1, @cpu_2, @dealer]
-    @players = [@player, @cpu_1, @cpu_2]
+    @non_dealers = [@player, cpu_1, cpu_2]
+    @table = [@player, cpu_1, cpu_2, @dealer]
     @game_over = false
     @hand_over = false
+  end
+
+  def reset_table
+    @game_over = true if @player.in == false
+    @table.each_with_index do |player, index|
+      if player.in == false && player.class == ComputerPlayer
+        @table.delete_at(index)
+        @non_dealers.delete_at(index)
+      end
+    end
   end
 
   def player_bets
@@ -46,9 +56,7 @@ class BlackJack
   def player_plays
     until @player.bust || @player.stay
       show_table
-      puts
-      puts "You have #{@player.card_total} doopals."
-      puts "Hit or Stay?"
+      hit_dialogue
       answer = gets.chomp.downcase
       if answer[0] == 'h'
         @dealer.deal_card(@player)
@@ -56,6 +64,7 @@ class BlackJack
         @player.stay = true
       end
     end
+    show_table
     puts "Press any key to see the rest of the table play"
     gets
   end
@@ -143,8 +152,9 @@ class BlackJack
   end
 
   def pay_out
-    @players.each do |player|
+    @non_dealers.each do |player|
       player.doopals += 2 * player.bet if player.won
+      player.in = false if player.doopals == 0
     end
   end
 
@@ -174,12 +184,14 @@ class BlackJack
       all_cards_face_up
       show_table
       pay_out
+      reset_table
       reset_variables
-      @players.each do |player|
+      @non_dealers.each do |player|
         puts "#{player.name} has #{player.doopals} doopals."
       end
       gets
     end
+    puts "YOU LOSE PUNY HUMAN"
   end
 
 end

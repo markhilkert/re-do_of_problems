@@ -19,6 +19,12 @@ module Dialogue
     gets.chomp.to_i
   end
 
+  def hit_dialogue
+    puts
+    puts "You have #{@player.card_total} points in this hand."
+    puts "Hit or Stay?"
+  end
+
   def invalid_bet
     system 'clear'
     puts "Invalid bet. Please try again."
